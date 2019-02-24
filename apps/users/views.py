@@ -5,4 +5,5 @@ from django.shortcuts import render
 def test(request):
 
     b=3
+    c=5
     return HttpResponse('test')
