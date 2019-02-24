@@ -6,4 +6,5 @@ def test(request):
 
     b=3
     c=5
+    a-4
     return HttpResponse('test')
