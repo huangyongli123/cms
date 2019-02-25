@@ -39,11 +39,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'rest_framework',
     'users',
     'news',
     'goods',
     'carts',
     'corsheaders',
+    'verifications',#获取短信验证码
 ]
 
 CACHES = {
@@ -61,7 +64,7 @@ CACHES = {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
     },
-    "verify_codes": { # 保存短信验证码
+    "sms_codes": { # 保存短信验证码
         "BACKEND": "django_redis.cache.RedisCache",
         "LOCATION": "redis://127.0.0.1:6379/2",
         "OPTIONS": {

@@ -87,12 +87,23 @@ var vm = new Vue({
 
         // 获取短信
         get_sms_code: function() {
+            //如果显示了短信验证码出错提示，则隐藏它
+
+            this.error_sms_code=false
             this.check_phone();
 
             if (!this.error_phone) {
 				//发送获取请求
-				
+
             }
+            alert('获取验证码')
+            axios.get('http://127.0.0.1:8000/sms_code/'+this.mobile+'/').then(response=>{
+                console.log('获取短信验证码')
+            }).catch(error=>{
+                this.error_sms_code=true;
+                this.error_sms_code_message = error.response.data.message;
+                alert('获取失败')
+            })
         },
 
         // 点击注册按钮
@@ -110,6 +121,28 @@ var vm = new Vue({
                 && this.error_phone === false
                 && this.error_allow === false) {
 				//发送注册请求
+                let data = { // 提交给服务器的表单数据
+                    username: this.username,
+                    password: this.password,
+                    password2: this.password2,
+                    mobile: this.mobile,
+                    sms_code: this.sms_code,
+                    allow: this.allow,
+                };
+                axios.post('http://127.0.0.1:8000' + '/register/', data).then(response=>{
+                        // 注册成功进入首页
+
+                    sessionStorage.clear();
+                    localStorage.clear();
+                    // 保存用户的登录状态数据
+                    localStorage.token = response.data.token;
+                    localStorage.username = response.data.username;
+                    localStorage.user_id = response.data.id;
+                        location.href = '/index.html'
+                }).catch(error=>{
+                    console.log(error);
+
+                })
             } else {
                 alert('填写有误')
             }
