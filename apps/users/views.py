@@ -3,7 +3,6 @@ from django.shortcuts import render
 
 # Create your views here.
 def test(request):
-    a=2
-
+    a=222
 
     return HttpResponse('tbest')
