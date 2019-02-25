@@ -21,7 +21,10 @@ var vm = new Vue({
 
         // 初始化显示类别新闻数据
         init_category_news: function () {
-           
+           axios.get("http://127.0.0.1:8000/news/category/")
+               .then(response =>{
+                   this.categories = response.data
+           })
         },
     },
 
