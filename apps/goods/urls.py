@@ -16,6 +16,13 @@ Including another URLconf
 from django.conf.urls import url
 from django.contrib import admin
 
+from goods import views
+
 urlpatterns = [
     # url(r'^admin/', admin.site.urls),
+    url(r'goods/channal/$',views.GoodsView.as_view()),
+    url(r'goods/recommend/$',views.RecommendView.as_view()),
+    url(r'goods/list/$',views.GoodslistView.as_view()),
+    url(r'goods_detail/$',views.GoodsDetailView.as_view()),
+
 ]
