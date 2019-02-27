@@ -5,8 +5,10 @@ from django_redis import get_redis_connection
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from cart import serializers
-from cart.serializers import CartAddSerializer
+
+from apps.cart import serializers
+from apps.cart.serializers import CartAddSerializer
+from apps.goods.models import Goods
 
 
 class CartView(APIView):
@@ -15,7 +17,7 @@ class CartView(APIView):
         serializer = CartAddSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        sku_id = serializer.validated_data.get('sku_id')
+        goods_id = serializer.validated_data.get('goods_id')
         count = serializer.validated_data.get('count')
         selected = serializer.validated_data.get('selected')
         # 获取用户
@@ -25,7 +27,7 @@ class CartView(APIView):
             # 用户已登录，获取操作Redis的StrictRedis对象
             redis = get_redis_connection('cart')
             # 增加购物车商品数量
-            redis.hincrby('cart_%s' % user.id, sku_id, count)
+            redis.hincrby('cart_%s' % user.id, goods_id, count)
             # 保存商品勾选状态
             if selected:
                 redis.sadd('carts_selected_%s' % user.id, sku_id)
@@ -46,14 +48,14 @@ class CartView(APIView):
             # 拼装字典
             # {1:{'count':2, 'selected':False}, 2:{'count':2, 'selected':False}}
             cart = {}
-            for sku_id, count in dict_cart.items():
-                cart[int(sku_id)] = {
+            for goods_id, count in dict_cart.items():
+                cart[int(goods_id)] = {
                     'count': int(count),
-                    'selected': sku_id in list_cart
+                    'selected': goods_id in list_cart
                 }
-            skus = SKU.objects.filter(id__in=cart.keys())
-            for sku in skus:
-                sku.count = cart[sku.id]['count']
-                sku.selected = cart[sku.id]['selected']
-            s = serializers.CartGoodsSer(skus, many=True)
+            goods = Goods.objects.filter(id__in=cart.keys())
+            for good in goods:
+                good.count = cart[good.id]['count']
+                good.selected = cart[good.id]['selected']
+            s = serializers.CartGoodsSer(goods, many=True)
             return Response(s.data)
