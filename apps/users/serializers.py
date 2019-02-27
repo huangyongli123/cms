@@ -68,7 +68,7 @@ class UserRegisterSerializer(ModelSerializer):
             raise serializers.ValidationError('两次密码输入不一致')
         # 2.校验短信验证码是否正确
         mobile = attrs['mobile']
-        strict_redis = get_redis_connection('sms_codes')
+        strict_redis = get_redis_connection('verify_codes')
         real_sms_code = strict_redis.get('sms_%s' % mobile)
 
         if not real_sms_code:

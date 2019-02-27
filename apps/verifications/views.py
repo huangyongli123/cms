@@ -12,9 +12,9 @@ from libs.yuntongxun.sms import CCP
 
 class SmsCodeView(APIView):
     def get(self,request,mobile):
-        """获取短信验证码接口"""
+        # """获取短信验证码接口"""
 
-        strict_redis = get_redis_connection('sms_codes')
+        strict_redis = get_redis_connection('verify_codes')
         print(strict_redis)
     # 4.校验是否重复发送
 
