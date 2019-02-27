@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
 
+from goods.models import Goods
+
 
 class CartAddSerializer(serializers.Serializer):
     """添加商品到购物车的序列化器"""
@@ -22,6 +24,6 @@ class CartGoodsSer(ModelSerializer):
     count = serializers.IntegerField(label='商品数量')
 
     class Meta:
-        model = SKU
+        model = Goods
         fields = '__all__'
 
