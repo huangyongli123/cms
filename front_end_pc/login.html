@@ -53,7 +53,7 @@
                     <label for="chkRemember">记住登录状态</label>
                 </div>
                 <div class="btn-box">
-                    <input id="btnSubmit" name="btnSubmit" type="submit" value="立即登录">
+                    <input id="btnSubmit" @click='on_submit' name="btnSubmit" type="submit" value="立即登录">
                 </div>
                 <!-- 出错提示信息 -->
                 <div id="error_msg" class="tip-box">{{ error_msg }}</div>
