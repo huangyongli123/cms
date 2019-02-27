@@ -11,10 +11,11 @@ class UserRegisterSerializer(ModelSerializer):
     sms_code = serializers.CharField(label="短信验证码", write_only=True)
     password2 = serializers.CharField(label="确认密码", write_only=True)
     allow = serializers.BooleanField(label="确认是否勾选", write_only=True)
+    token = serializers.CharField(label='登录状态token', read_only=True)
 
     class Meta:
         model = User
-        fields = ('id', 'username', 'password', 'sms_code', 'password2', 'mobile', 'allow')
+        fields = ('id', 'username', 'password', 'sms_code', 'password2', 'mobile', 'allow','token')
         extra_kwargs = {
             'username': {
 
@@ -38,12 +39,28 @@ class UserRegisterSerializer(ModelSerializer):
 
     def create(self, validated_data):
         """添加一条用户数据"""
-        data = User.objects.create_user(
+
+
+        user = User.objects.create_user(
             username=validated_data.get('username'),
             password=validated_data.get('password'),
             mobile=validated_data.get('mobile'),
         )
-        return data
+        # 注册成功自动登陆
+        # todo: 生成jwt字符串
+        from rest_framework_jwt.settings import api_settings
+        jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER  # 生payload部分的方法(函数)
+        jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER  # 生成jwt的方法(函数)
+        #  {'exp': xxx, 'email': '', 'user_id': 1, 'username': 'admin'}
+        # user：登录的用户对象
+        payload = jwt_payload_handler(user)  # 生成payload, 得到字典
+        token = jwt_encode_handler(payload)  # 生成jwt字符串
+
+        # 给user对象新增一个token的属性
+        user.token = token
+
+
+        return user
 
     def validate_mobile(self, value):
         """校验手机号输入格式是否正确"""

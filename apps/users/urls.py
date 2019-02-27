@@ -15,6 +15,7 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
+from rest_framework_jwt.views import obtain_jwt_token
 
 from users import views
 
@@ -22,4 +23,5 @@ urlpatterns = [
     # url(r'^admin/', admin.site.urls),
     url(r'^test/$', views.test),
     url(r'^register/$', views.UserRegisterView.as_view()),
+    url(r'^authorizations/$', obtain_jwt_token),
 ]
