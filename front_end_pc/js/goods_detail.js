@@ -42,10 +42,33 @@ var vm = new Vue({
         },
 
         addToCart: function() {
+            let data = {
+                goods_id: parseInt(this.goods_id),
+                count: this.count
+            };
+            let config = {
+                headers: { // 通过请求头往服务器传递登录状态
+                    'Authorization': 'JWT ' + this.token
+                },
+                withCredentials: true   // 注意： 跨域请求传递cookie给服务器
+            };
             // 添加商品到购物车
+            // alert(111)
             if (this.is_login()) {  // 已经登录
                 //发送登录请求
-				
+                axios.post('127.0.0.1:8000'+'/cart/', data, config)
+
+                 .then(response => {
+
+                     alert('添加购物车成功');
+
+                    this.cart_total_count += response.data.count;
+                })
+                    // alert(response)
+                 .catch(error => {
+                    alert('添加购物车失败');
+                    console.log(error.response.data);
+                });
 			
                
             } else {

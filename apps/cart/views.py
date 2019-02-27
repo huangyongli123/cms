@@ -8,6 +8,7 @@ from rest_framework.views import APIView
 
 from cart import serializers
 from cart.serializers import CartAddSerializer
+
 from goods.models import Goods
 
 
@@ -32,6 +33,7 @@ class CartView(APIView):
             if selected:
                 redis.sadd('carts_selected_%s' % user.id, goods_id)
             # 响应序列化数据
+
                 return Response(serializer.data, status=201)
 
     def get(self, request):
@@ -59,3 +61,4 @@ class CartView(APIView):
                 good.selected = cart[good.id]['selected']
             s = serializers.CartGoodsSer(goods, many=True)
             return Response(s.data)
+        return Response("没登陆")
