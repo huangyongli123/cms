@@ -34,6 +34,7 @@ class SmsCodeView(APIView):
         #设置短信验证码有效期为5分钟
         real_code=strict_redis.setex('sms_%s'%mobile,60*5,sms_code)
         print(real_code)
+
         #设置60秒内不能重复发送
         strict_redis.setex('sms_flag_%s'%mobile,60,1)
 
