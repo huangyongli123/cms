@@ -95,7 +95,7 @@ class UserRegisterSerializer(ModelSerializer):
         return attrs
 
 
-# areas/serializers.py
+
 class AreaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Area
