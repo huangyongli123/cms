@@ -41,5 +41,5 @@ class SmsCodeView(APIView):
 
 
 
-    #5.响应数据
+        #5.响应数据
         return Response({'message':'短信发送成功'})
