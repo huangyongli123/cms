@@ -4,7 +4,7 @@ from django_redis import get_redis_connection
 from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
 
-from users.models import User
+from users.models import User, Area
 
 
 class UserRegisterSerializer(ModelSerializer):
@@ -93,3 +93,19 @@ class UserRegisterSerializer(ModelSerializer):
         if real_sms_code.decode() != attrs['sms_code']:
             raise serializers.ValidationError('短信验证码输入错误')
         return attrs
+
+
+# areas/serializers.py
+class AreaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Area
+        fields = ('id', 'name')
+
+
+class SubAreaSerializer(serializers.ModelSerializer):
+    """ 子行政区划信息序列化器 """
+    subs = AreaSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Area
+        fields = ('id', 'name', 'subs')  # Area模型类中中 related_name 的值

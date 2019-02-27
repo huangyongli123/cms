@@ -24,4 +24,6 @@ urlpatterns = [
     url(r'^test/$', views.test),
     url(r'^register/$', views.UserRegisterView.as_view()),
     url(r'^authorizations/$', obtain_jwt_token),
+    url(r'^areas/$', views.AreaProvinceView.as_view()),
+    url(r'^areas/(?P<pk>\d+)/$', views.SubAreaView.as_view()),
 ]
