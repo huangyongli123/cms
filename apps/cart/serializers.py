@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
 
-from apps import goods
+from goods.models import Goods
 
 
 class CartAddSerializer(serializers.Serializer):
@@ -13,8 +13,8 @@ class CartAddSerializer(serializers.Serializer):
     def validate(self, value):
         """判断添加到购物车的商品是否存在"""
         try:
-            sku = goods.objects.get(id=value['goods_id'])
-        except goods.DoesNotExist:
+            sku = Goods.objects.get(id=value['goods_id'])
+        except Goods.DoesNotExist:
             raise serializers.ValidationError('商品不存在')
         return value
 
@@ -24,6 +24,6 @@ class CartGoodsSer(ModelSerializer):
     count = serializers.IntegerField(label='商品数量')
 
     class Meta:
-        model = goods
+        model = Goods
         fields = '__all__'
 

@@ -6,9 +6,9 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 
-from apps.cart import serializers
-from apps.cart.serializers import CartAddSerializer
-from apps.goods.models import Goods
+from cart import serializers
+from cart.serializers import CartAddSerializer
+from goods.models import Goods
 
 
 class CartView(APIView):
@@ -30,7 +30,7 @@ class CartView(APIView):
             redis.hincrby('cart_%s' % user.id, goods_id, count)
             # 保存商品勾选状态
             if selected:
-                redis.sadd('carts_selected_%s' % user.id, sku_id)
+                redis.sadd('carts_selected_%s' % user.id, goods_id)
             # 响应序列化数据
                 return Response(serializer.data, status=201)
 
