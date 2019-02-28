@@ -15,9 +15,11 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
+from rest_framework.routers import DefaultRouter
 from rest_framework_jwt.views import obtain_jwt_token
 
 from users import views
+from users.views import AddressAPIViewSet
 
 urlpatterns = [
     # url(r'^admin/', admin.site.urls),
@@ -26,4 +28,14 @@ urlpatterns = [
     url(r'^authorizations/$', obtain_jwt_token),
     url(r'^areas/$', views.AreaProvinceView.as_view()),
     url(r'^areas/(?P<pk>\d+)/$', views.SubAreaView.as_view()),
+
 ]
+router = DefaultRouter()
+# 参数1: 路由访问的前缀
+# 参数2: 视图集
+# 参数3: 路由名称的前缀, 可以省略不配
+router.register(r'addresses', AddressAPIViewSet, base_name='address')
+
+# router.urls: 生成出来的路由配置项
+urlpatterns += router.urls
+print(urlpatterns)

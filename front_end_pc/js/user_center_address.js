@@ -11,6 +11,17 @@ var vm = new Vue({
 
     mounted: function(){
         // 请求当前登录用户的所有的地址
+         axios.get('http://127.0.0.1:8000/addresses/',{
+                headers: {
+                    'Authorization': 'JWT ' + this.token
+                }
+             }
+         ).then(response=>{
+                this.addresses=response.data.addresses;
+                this.default_address_id=response.data.default_address_id
+            }).catch(error=> {
+             alert('获取失败')
+         })
        
     },
 
@@ -26,8 +37,17 @@ var vm = new Vue({
         },
 
         // 删除地址
-        delete_address: function (address_id) {
-            // 发送请求
+        delete_address: function(address_id) {
+             axios.delete('http://127.0.0.1:8000/addresses/'+address_id+"/",{
+                headers: {
+                    'Authorization': 'JWT ' + this.token
+                }
+             }
+         ).then(response=>{
+               location.reload()
+            }).catch(error=> {
+             alert('删除失败')
+         })
             
         }
     }
