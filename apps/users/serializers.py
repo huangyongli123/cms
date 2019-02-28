@@ -4,7 +4,7 @@ from django_redis import get_redis_connection
 from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
 
-from users.models import User, Area
+from users.models import User, Area, Address
 
 
 class UserRegisterSerializer(ModelSerializer):
@@ -109,3 +109,36 @@ class SubAreaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Area
         fields = ('id', 'name', 'subs')  # Area模型类中中 related_name 的值
+
+
+class AddressSerializer(serializers.ModelSerializer):
+    province = serializers.StringRelatedField(read_only=True)
+    city = serializers.StringRelatedField(read_only=True)
+    district = serializers.StringRelatedField(read_only=True)
+    province_id = serializers.IntegerField(label='省ID')
+    city_id = serializers.IntegerField(label='市ID')
+    district_id = serializers.IntegerField(label='区ID')
+
+    def validate_mobile(self, value):
+        if not re.match(r'^1[3-9]\d{9}$', value):
+            raise serializers.ValidationError('手机号格式错误')
+        return value
+
+    def create(self, validated_data):
+        """ 保存 """
+        # 补充一个字段： 收件地址所属用户, 再保存到数据库表中
+        validated_data['user'] = self.context['request'].user  # 获取当前登录用户对象
+        # validated_data['user_id'] = 2
+        return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        instance.receiver = validated_data.get("receiver", instance.receiver)
+        instance.place = validated_data.get("place", instance.place)
+        instance.mobile = validated_data.get("mobile", instance.mobile)
+        instance.tel = validated_data.get("tel", instance.tel)
+        instance.email = validated_data.get("email", instance.email)
+        return instance
+
+    class Meta:
+        model = Address # 新增地址，不需要用户传递user到服务器，服务器可以自动获取到当前登录用户对象
+        exclude = ('user', 'is_deleted', 'create_time', 'update_time')

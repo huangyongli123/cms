@@ -40,6 +40,8 @@ class Address(BaseModel):
     email = models.CharField(max_length=30, null=True, blank=True,
                              default='', verbose_name='电子邮箱')
     is_deleted = models.BooleanField(default=False, verbose_name='逻辑删除')
+    default_address= models.ForeignKey('Address', on_delete=models.PROTECT,
+                                verbose_name='默认地址',null=True)
 
     class Meta:
         db_table = 'tb_address'
