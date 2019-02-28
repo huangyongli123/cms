@@ -59,3 +59,4 @@ class CartView(APIView):
                 good.selected = cart[good.id]['selected']
             s = serializers.CartGoodsSer(goods, many=True)
             return Response(s.data)
+        return Response({'message':'ok'})

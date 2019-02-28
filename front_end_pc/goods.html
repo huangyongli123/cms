@@ -188,7 +188,7 @@
         <!--子类-->
         <template v-for="(category, index) in categories">
             <div class="main-tit">
-                <h2>{{ category.title }}</h2>
+                <h2><a :href="'list.html?category=' + category.id">{{ category.title }}</a></h2>
                 <p>
                     <a :href="'list.html?category=' + sub.id"
                        v-for="(sub, index) in category.goodscategory_set">{{ sub.title }}</a>

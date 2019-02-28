@@ -30,15 +30,16 @@ var vm = new Vue({
 
         // 获取当前显示的类别
         get_current_category: function () {
-            // alert('aaaaaaa')
+
             // 获取url中的类别id
             var category_id = this.get_query_string('category');
             //发送请求
             axios.get('http://127.0.0.1:8000/goods/list/?category='+category_id)
                 .then(response=>{
 
-                    this.goods_list=response.data
-                    console.log(this.goods_list)
+                    this.goods_list=response.data.goods
+                    this.category=response.data.category
+
 
                 })
         },

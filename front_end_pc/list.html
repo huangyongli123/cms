@@ -26,15 +26,15 @@
             <a href="index.html">首页</a> &gt;
             <a href="goods.html">购物商城</a>
 
-            <!-- 面包屑导航
-            <template v-if="category.parent !== null">
+            <!-- 面包屑导航-->
+            <template v-if="category.parent != null">
                 &nbsp;&gt;&nbsp;<a :href="'list.html?category=' + category.parent.id">{{ category.parent.title }}</a>&nbsp;&gt;&nbsp;
                 <a :href="'list.html?category=' + category.id">{{ category.title }}</a>
             </template>
             <template v-else>
                 &gt;&nbsp;<a :href="'list.html?category=' + category.id">{{ category.title }}</a>
             </template>
--->
+
         </div>
     </div>
     <!--/当前位置-->
