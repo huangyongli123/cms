@@ -20,7 +20,7 @@
                      <a href="login.html">登录</a>
                 </template>
 
-                <a id="cart_count" href="cart.html" >购物车({{ total_count }})</a>
+                <a id="cart_count" href="cart.html" >购物车({{ count }})</a>
                 <a href="">联系我们</a>
             </div>
         </div>
@@ -50,13 +50,20 @@
         el: '#menu',
         data: {
             username: sessionStorage.username || localStorage.username,
-            total_count: 0
+            token: sessionStorage.token || localStorage.token,
+            count: 0
+
         },
         mounted: function(){
-            axios.get('http://127.0.0.1:8000/cart/count/')
+            if(this.token!=undefined){
+            axios.get('http://127.0.0.1:8000/cart/',{
+                 headers: {
+                    'Authorization': 'JWT ' + this.token
+                    }
+            })
                 .then(response => {
-                    this.total_count = response.data.total_count;
-                })
+                    this.count = response.data.count;
+                })}
         },
         methods: {
             // 退出

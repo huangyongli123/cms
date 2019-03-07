@@ -4,6 +4,8 @@
         host: 'http://127.0.0.1:8000',
         goods_list: [],         // 购物车中的商品
         origin_input: 1,        // 商品数量
+        token: sessionStorage.token || localStorage.token,
+        // total_count:0
     },
 
     computed: {
@@ -52,16 +54,57 @@
 
     methods: {
         // 全选和全不选
-        on_select_all: function() {
-            let select = !this.select_all;
-            for (let i = 0; i < this.goods_list.length; i++) {
-                this.goods_list[i].selected = select;
-            }
-        },
+       on_select_all: function(){
+            var selected = !this.select_all;
+
+
+            // 发请求保存商品的勾选状态
+            var data = {
+                selected: true,
+            };
+            axios.put(this.host + '/cart/selection/', data, {
+                    responseType: 'json',
+                    headers:{
+                        'Authorization': 'JWT ' + this.token
+                    },
+                    withCredentials: true // 跨域请求传递cookie给服务器
+                })
+                .then(response => {
+                    // 设置商品全选或全不选
+                    for (var i=0; i<this.goods_list.length;i++){
+                        this.goods_list[i].selected = selected;
+                    }
+                })
+                .catch(error => {
+                    console.log(error.response.data);
+                })
+            },
 
         // 获取购物车商品数据
         get_cart_goods: function () {
-           //发送请求
+
+            let url = this.host + '/cart/';
+
+            axios.get(url,{
+                 headers: {
+                    'Authorization': 'JWT ' + this.token
+                    }
+            })
+
+                .then(response => {
+
+                    this.goods_list = response.data.goods;
+
+                    // 动态地新增一个变量, 记录商品的勾选状态
+                    for (let i = 0; i < this.goods_list.length; i++) {
+                        let goods = this.goods_list[i];
+                        this.goods_list[i].amount = parseFloat(goods.sell_price * goods.count);
+                    }
+                })
+                .catch(error => {
+                    console.log('====error: ' + error)
+
+                })
         },
 
         // 点击增加购买数量
@@ -91,17 +134,67 @@
 
         // 更新购物车商品数量
         update_cart_count: function(goods_id, count, index) {
-            //发送请求
+            let url = this.host + '/cart/';
+            // 请求参数
+            let params =  {
+                goods_id: goods_id,
+                count: count,
+                selected:true
+
+
+
+            };
+            axios.put(url, params,{
+                headers: {
+                    'Authorization': 'JWT ' + this.token
+                    }
+            })
+                .then(response => {
+                    this.goods_list[index].count = count;
+                    this.goods_list[index].amount = this.goods_list[index].sell_price * count;
+
+                    // 服务器返回的购物车的总数量
+                    this.total_count = response.data.total_count;
+
+                    $('#cart_count').text('购物车(' + this.total_count + ')')
+                })
+                .catch(error => {
+                    this.goods_list[index].count = this.origin_input;
+                    if ('non_field_errors' in error.response.data) {
+                        alert(error.response.data.non_field_errors[0]);
+                    } else {
+                        alert('修改购物车失败');
+                    }
+                })
         },
 
         // 删除购物车中的一个商品
         delete_goods: function(index){
-            //发送请求
+            let url = this.host + '/cart/';
+            let params =  { // 请求参数
+                goods_id: this.goods_list[index].id,
+            };
+            axios.delete(url,{data:params, headers: {
+                    'Authorization': 'JWT ' + this.token
+                    }})
+                .then(response => {
+                    $('#cart_count').text('购物车(' + this.total_count + ')');
+                    location.reload()
+                })
+                .catch(function (error) {
+                    console.log(error);
+                })
         },
 
         // 清空购物车
         clearCart: function(index){
-            //发送请求
+            let count = 0;
+            for (let i = 0; i < this.goods_list.length; i++) {
+                if (this.goods_list[i].selected) {
+                    count++
+                }
+            }
+            alert(count)
         },
     }
 });

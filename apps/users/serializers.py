@@ -118,6 +118,7 @@ class AddressSerializer(serializers.ModelSerializer):
     province_id = serializers.IntegerField(label='省ID')
     city_id = serializers.IntegerField(label='市ID')
     district_id = serializers.IntegerField(label='区ID')
+    # default_address=serializers.PrimaryKeyRelatedField(read_only=True)
 
     def validate_mobile(self, value):
         if not re.match(r'^1[3-9]\d{9}$', value):
@@ -127,9 +128,10 @@ class AddressSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         """ 保存 """
         # 补充一个字段： 收件地址所属用户, 再保存到数据库表中
-        validated_data['user'] = self.context['request'].user  # 获取当前登录用户对象
+        validated_data['user'] = self.context['request'].user
+        print(validated_data)# 获取当前登录用户对象
         # validated_data['user_id'] = 2
-        return super().create(validated_data)
+        return Address.objects.create(**validated_data)
 
     def update(self, instance, validated_data):
         instance.receiver = validated_data.get("receiver", instance.receiver)

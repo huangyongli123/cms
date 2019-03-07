@@ -2,6 +2,8 @@ from django.http.response import HttpResponse
 from django.shortcuts import render
 
 # Create your views here.
+from rest_framework.decorators import action
+from rest_framework.exceptions import ValidationError
 from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView, DestroyAPIView, UpdateAPIView
 from rest_framework.mixins import CreateModelMixin, ListModelMixin, DestroyModelMixin, RetrieveModelMixin, \
     UpdateModelMixin
@@ -44,5 +46,16 @@ class AddressAPIViewSet(CreateModelMixin, DestroyModelMixin, RetrieveModelMixin,
         queryset = self.filter_queryset(self.get_queryset())
 
         serializer = self.get_serializer(queryset, many=True)
-        # return Response({"addresses":serializer.data,"default_address_id":request.user.default_address_id})
-        return Response(serializer.data)
+        return Response({"addresses": serializer.data, "default_address_id": request.user.default_address_id})
+        # return Response(serializer.data)
+
+    @action(methods=['PUT'], detail=True)
+    def status(self, request, pk):
+        user = request.user
+        try:
+            Address.objects.get(id=pk, user=user)
+        except:
+            raise ValidationError('该地址不存在或者不属于该用户')
+        user.default_address_id = pk
+        user.save()
+        return Response(status=204)

@@ -15,12 +15,12 @@ class SmsCodeView(APIView):
         # """获取短信验证码接口"""
 
         strict_redis = get_redis_connection('verify_codes')
-        print(strict_redis)
+
     # 4.校验是否重复发送
 
         sms_flag = strict_redis.get('sms_flag_%s' % mobile)
 
-        print('短信验证码状态：',sms_flag)
+
         if sms_flag:
             return Response({'message': '短信发送过于频繁'}, status=400)
     #1.生成短信验证码

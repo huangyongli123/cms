@@ -3,6 +3,7 @@ var vm = new Vue({
     data: {
         host: 'http://127.0.0.1:8000',
         goods: null,
+          token: sessionStorage.token || localStorage.token,
         recommend_goods: null,
 
         count: 1,            // 添加到购物车的商品数量
@@ -41,36 +42,33 @@ var vm = new Vue({
             })
         },
 
-        addToCart: function() {
-            let data = {
-                goods_id: parseInt(this.goods_id),
-                count: this.count
-            };
-            let config = {
-                headers: { // 通过请求头往服务器传递登录状态
-                    'Authorization': 'JWT ' + this.token
-                },
-                withCredentials: true   // 注意： 跨域请求传递cookie给服务器
-            };
+         addToCart: function() {
             // 添加商品到购物车
-            // alert(111)
             if (this.is_login()) {  // 已经登录
-                //发送登录请求
-                axios.post('127.0.0.1:8000'+'/cart/', data, config)
+                let url = this.host + '/cart/';
+                // 请求参数
+                // alert('222')
+                var params =  {
+                    goods_id: this.goods_id,
+                    count: this.count,
+                    selected:true
+                };
+                axios.post(url, params,{
+                     headers: {
+                    'Authorization': 'JWT ' + this.token
+                    }
+                    })
+                    // alert('222')
+                    .then(response => {
 
-                 .then(response => {
+                        this.total_count = response.data.count;
 
-                     alert('添加购物车成功');
+                        $('#cart_count').text('购物车(' + this.total_count + ')')
+                    })
+                    .catch(function (error) {
+                        console.log(error)
 
-                    this.cart_total_count += response.data.count;
-                })
-                    // alert(response)
-                 .catch(error => {
-                    alert('添加购物车失败');
-                    console.log(error.response.data);
-                });
-			
-               
+                    })
             } else {
                 // 如果没有登录,跳转到登录界面,引导用户登录
                 window.location.href = 'login.html'

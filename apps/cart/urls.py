@@ -20,5 +20,6 @@ from apps.cart import views
 
 urlpatterns = [
     # url(r'^admin/', admin.site.urls),
-    url(r'^cart/', views.CartView.as_view()),
+    url(r'^cart/$', views.CartView.as_view()),
+url(r'^cart/selection/$', views.CartSelectAllView.as_view()),
 ]

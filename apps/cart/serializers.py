@@ -13,7 +13,7 @@ class CartAddSerializer(serializers.Serializer):
     def validate(self, value):
         """判断添加到购物车的商品是否存在"""
         try:
-            sku = Goods.objects.get(id=value['goods_id'])
+            Goods.objects.get(id=value['goods_id'])
         except Goods.DoesNotExist:
             raise serializers.ValidationError('商品不存在')
         return value
@@ -25,5 +25,26 @@ class CartGoodsSer(ModelSerializer):
 
     class Meta:
         model = Goods
-        fields = '__all__'
+        fields = ('id', 'sell_price', 'count', 'selected','title','category','img_url')
+
+
+class CartDeleteSerializer(serializers.Serializer):
+    """
+    删除购物车数据序列化器
+    """
+    goods_id = serializers.IntegerField(label='商品id', min_value=1)
+
+    def validate_goods_id(self, value):
+        try:
+            sku = Goods.objects.get(id=value)
+        except Goods.DoesNotExist:
+            raise serializers.ValidationError('商品不存在')
+        return value
+
+class CartSelectAllSerializer(serializers.Serializer):
+    """
+    购物车全选
+    """
+    selected = serializers.BooleanField(label='全选')
+
 
